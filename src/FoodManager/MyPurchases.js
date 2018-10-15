@@ -5,17 +5,39 @@ import Titile from '../Forms/Title';
 import Input from '../Forms/Input'
 import Button from '../Forms/Button'
 import Navigation from '../Navigations/Navigation'
+import DatePicker from 'react-datepicker';
+import moment from 'moment';
+ 
+import 'react-datepicker/dist/react-datepicker.css';
 
-class MyPurchases extends React.Component{
+//the purchases line which is including name, quantity, expire date, button to put in the fridge)
+class PurchaseItem extends React.Component{
 
     constructor(props){
         super(props);
         this.state = {
-            price: ''
+            price: '',
+            quantity: 0,
+            expirytDate: moment(),
         }
     }
+    //for my stepper
+    incresementValue = () => {
+        console.log(this.state.quantity);
+        const addnumber = this.state.quantity + 1;
+        this.setState({
+            quantity: addnumber 
+        })
+    }   
 
-    handleChange = (e) => {
+    decresementValue = () => {
+        const minusnumber = this.state.quantity - 1;
+        this.setState({
+            quantity: minusnumber 
+        })
+    }
+
+    pricehandleChange = (e) => {
     
         this.setState({
             price: e.target.value
@@ -31,24 +53,64 @@ class MyPurchases extends React.Component{
         })
     }
 
+//for my calender(used npm install from: https://www.npmjs.com/package/react-datepicker)
+    handleChange = (date) => {
+
+        this.setState({
+          expirytDate: date
+        });
+      }
+
+    render(){
+        console.log(this.props.purchaseItem)
+
+        return(
+            <div>
+                {this.props.purchaseItem.name}
+                <Button onClick={this.decresementValue}> - </Button>
+                <Input type="number" value={this.state.quantity} />
+                <Button onClick={this.incresementValue}> + </Button>
+                <form onSubmit={this.handleSubmit}>
+                    <h2>Price</h2>
+                    <Input type="text" onChange = {this.pricehandleChange} />
+                    {/* <Button>$$$</Button> */}
+                </form>
+                    <h2>expiry Date</h2>
+                <DatePicker
+                    selected={this.state.expirytDate}
+                    onChange={this.handleChange}
+                />
+
+                <Button>Save In My Fridge</Button>
+            </div>
+        )
+    }
+}
+
+
+
+class MyPurchases extends React.Component{
+
+
+
     render(){
         // const { purchaseList } = this.props
         // console.log('purchaseList', purchaseList)
+        console.log(this.props.purchasesList)
         return(
             <div>
                 <Navigation/>
                 <Titile>My Purchases</Titile>
-                <form onSubmit={this.handleSubmit}>
-                    <h1>{}</h1>
-                    <Input type="text" onChange = {this.handleChange} />
-                    <Button>$$$</Button>
+                {/* <PurchaseItem /> */}
                 <ul>
-                    {this.props.purchasesList.map((item) => 
+                    {this.props.purchasesList.map((line) => 
                     <li>
-                        {item.name}
+                        <PurchaseItem  purchaseItem={line}/>
+                        {/* {item.name} */}
                     </li>)}
                 </ul>
-                </form>
+                
+                
             </div>
         )
     }
