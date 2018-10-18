@@ -51,7 +51,7 @@ class FMapp extends React.Component{
                     
                     <li key={item.id}>{item.name}
                         <Button onClick={(e) => this.props.fMappDeletehandleOnClick(e, item)}>Delete</Button>
-                        <Button onClick={(e) =>  this.props.fMappCompletedhandleOnClick(e,item)}>Go To Purchases</Button>
+                        <Button onClick={(e) =>  this.props.fMappCompletedhandleOnClick(e,item)}>Buy</Button>
                     </li>
         
                     )}

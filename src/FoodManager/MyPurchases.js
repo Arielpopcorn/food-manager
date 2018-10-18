@@ -18,12 +18,12 @@ class PurchaseItem extends React.Component{
         this.state = {
             price: '',
             quantity: 0,
+            fridgeday: Date.now(),
             expirytDate: moment(),
         }
     }
     //for my stepper
     incresementValue = () => {
-        console.log(this.state.quantity);
         const addnumber = this.state.quantity + 1;
         this.setState({
             quantity: addnumber 
@@ -63,7 +63,7 @@ class PurchaseItem extends React.Component{
 
     render(){
         console.log(this.props.purchaseItem)
-
+        console.log(this.props.weCanNamethisanything)
         return(
             <div>
                 {this.props.purchaseItem.name}
@@ -81,7 +81,7 @@ class PurchaseItem extends React.Component{
                     onChange={this.handleChange}
                 />
 
-                <Button>Save In My Fridge</Button>
+                <Button onClick={(e)=>this.props.weCanNamethisanything(e, this.props.purchaseItem, this.state.price, this.state.quantity, this.state.fridgeday, this.state.expirytDate)}>Save In My Fridge</Button>
             </div>
         )
     }
@@ -96,7 +96,9 @@ class MyPurchases extends React.Component{
     render(){
         // const { purchaseList } = this.props
         // console.log('purchaseList', purchaseList)
-        console.log(this.props.purchasesList)
+        //console.log(this.props.purchasesList)
+        console.log('MyPurchases this.props',this.props)
+        
         return(
             <div>
                 <Navigation/>
@@ -105,7 +107,11 @@ class MyPurchases extends React.Component{
                 <ul>
                     {this.props.purchasesList.map((line) => 
                     <li>
-                        <PurchaseItem  purchaseItem={line}/>
+                        <PurchaseItem  
+                        purchaseItem={line}
+                        weCanNamethisanything={this.props.putInTheFridgeOnclick}
+                        />
+                        
                         {/* {item.name} */}
                     </li>)}
                 </ul>
