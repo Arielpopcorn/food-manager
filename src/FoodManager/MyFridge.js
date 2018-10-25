@@ -4,6 +4,7 @@ import Navigation from '../Navigations/Navigation';
 import Titile from '../Forms/Title';
 import Button from '../Forms/Button';
 import { now } from '../../../../Library/Caches/typescript/2.9/node_modules/moment';
+import Input from '../Forms/Input';
 
 class FridgeItem extends React.Component{
 
@@ -14,55 +15,27 @@ class FridgeItem extends React.Component{
         }
     }
 
-    fridgeIncresementValue = () => {
-        const addnumber = this.state.quantity + 1;
-
-        if(this.state.quantity == this.props.fridgeItem.quantity){
-            return
-        }
-        
-        this.setState({
-            quantity: addnumber 
-        })
-    }   
-
-    fridgeDecresementValue = () => {
-        const minusnumber = this.state.quantity - 1;
-
-        if(this.state.quantity == 0){
-            return
-        }
-
-        this.setState({
-            quantity: minusnumber 
-        })
-    }
-    
-    // console.log(this.props.fridgeItem)
-
     render(){
 
         console.log(this.props.fridgeItem)
         let binbutton
 
-        if(this.state.quantity == 0){
+        if(this.props.fridgeItem.remain == 0){
                 binbutton = <Button onClick={(e) => {
-                    this.props.newConsumedClick(e, this.props.fridgeItem, this.props.fridgeItem.quantity - this.state.quantity)
+                    this.props.putInFoodConsumed(e, this.props.fridgeItem)
                 }}>Archive</Button>
             }else{
                 binbutton = <Button onClick={(e) => {
-                    this.props.newWastedClick(e, this.props.fridgeItem, this.state.quantity)}
+                    this.props.putInFoodWasted(e, this.props.fridgeItem)}
                 }>Throw in the bin</Button>
             }
-
-        // if(this.state.quantity == this.props.fridgeItem.quantity){
-        //     console.log()
-        // }
 
         return(
         <div>
             {this.props.fridgeItem.name}
-            <Button onClick={this.fridgeDecresementValue}> - </Button>{this.state.quantity}/{this.props.fridgeItem.quantity}<Button onClick={this.fridgeIncresementValue}> + </Button>
+            <Button onClick={() => this.props.fridgeDecresementValue(this.props.fridgeItem.id)}> - </Button>
+            {this.props.fridgeItem.remain}/{this.props.fridgeItem.quantity}
+            <Button onClick={() => this.props.fridgeIncresementValue(this.props.fridgeItem.id)}> + </Button>
             <h2>{this.props.fridgeItem.expirytDate.endOf('day').fromNow()} days until expiry date.</h2>
             {/* {console.log(this.props.fridgeItem.expirytDate.unix(), Date.now())} */}
             {binbutton}
@@ -75,7 +48,7 @@ class FridgeItem extends React.Component{
 class MyFridge extends React.Component{
     render(){
 
-        console.log(this.props)
+        console.log(this.props.purchasesList)
 
         return(
             <div>
@@ -84,14 +57,17 @@ class MyFridge extends React.Component{
                 <ul>
                     {this.props.fridgeList.map((line) => 
                 <li>
-                    <FridgeItem 
+                    <FridgeItem
                     fridgeItem = {line}
-                    newConsumedClick = {this.props.putInFoodConsumedOnclick}
-                    newWastedClick = {this.props.putInFoodWastedOnclick}
+                    fridgeIncresementValue = {this.props.fridgeIncresementValue}
+                    fridgeDecresementValue = {this.props.fridgeDecresementValue}
+                    putInFoodConsumed = {this.props.putInFoodConsumed}
+                    putInFoodWasted = {this.props.putInFoodWasted}
                     />
                 </li>    
                 )}
                 </ul>
+                
             </div>
         )
     }

@@ -6,82 +6,78 @@ import Input from '../Forms/Input'
 import Button from '../Forms/Button'
 import Navigation from '../Navigations/Navigation'
 import DatePicker from 'react-datepicker';
-import moment from 'moment';
  
 import 'react-datepicker/dist/react-datepicker.css';
 
 //the purchases line which is including name, quantity, expire date, button to put in the fridge)
 class PurchaseItem extends React.Component{
 
-    constructor(props){
-        super(props);
-        this.state = {
-            price: '',
-            quantity: 0,
-            fridgeday: Date.now(),
-            expirytDate: moment(),
-        }
-    }
+    // constructor(props){
+    //     super(props);
+    //     this.state = {
+    //         price: '',
+    //         quantity: 0,
+    //         fridgeday: Date.now(),
+    //         expirytDate: moment(),
+    //     }
+    // }
     //for my stepper
-    incresementValue = () => {
-        const addnumber = this.state.quantity + 1;
-        this.setState({
-            quantity: addnumber 
-        })
-    }   
 
-    decresementValue = () => {
-        const minusnumber = this.state.quantity - 1;
-        this.setState({
-            quantity: minusnumber 
-        })
-    }
+    // decresementValue = () => {
+    //     const minusnumber = this.state.quantity - 1;
 
-    pricehandleChange = (e) => {
+    //     if(this.state.quantity == 0){
+    //         return
+    //     }
+
+    //     this.setState({
+    //         quantity: minusnumber 
+    //     })
+    // }
+
+    // pricehandleChange = (e) => {
     
-        this.setState({
-            price: e.target.value
-        })
-    }
+    //     this.setState({
+    //         price: e.target.value
+    //     })
+    // }
 
-    handleSubmit = (e) => {
+    // handleSubmit = (e) => {
 
-        this.props.purchasesList(e, this.state.price)
+    //     this.props.purchasesList(e, this.state.price)
 
-        this.setState({
+    //     this.setState({
             
-        })
-    }
+    //     })
+    // }
 
 //for my calender(used npm install from: https://www.npmjs.com/package/react-datepicker)
-    handleChange = (date) => {
+    // handleChange = (date) => {
 
-        this.setState({
-          expirytDate: date
-        });
-      }
+    //     this.setState({
+    //       expirytDate: date
+    //     });
+    //   }
 
     render(){
-        console.log(this.props.purchaseItem)
-        console.log(this.props.weCanNamethisanything)
+        console.log(this.props.PurchaseItem)
         return(
             <div>
                 {this.props.purchaseItem.name}
-                <Button onClick={this.decresementValue}> - </Button>
-                <Input type="number" value={this.state.quantity} />
-                <Button onClick={this.incresementValue}> + </Button>
-                <form onSubmit={this.handleSubmit}>
+                <Button onClick={() => this.props.decrementPurchaseItem(this.props.purchaseItem.id)}> - </Button>
+                <Input type="number" value={this.props.purchaseItem.quantity} />
+                <Button onClick={() => this.props.incrementPurchaseItem(this.props.purchaseItem.id)}> + </Button>
+                {/* <form onSubmit={this.props.handleSubmit}> */}
                     <h2>Price</h2>
-                    <Input type="text" onChange = {this.pricehandleChange} />
+                    <Input type="text" value={this.props.purchaseItem.price} onChange={(e) => this.props.pricehandleChange(this.props.purchaseItem.id, e.target.value)} />
                     {/* <Button>$$$</Button> */}
-                </form>
+                {/* </form> */}
                     <h2>expiry Date</h2>
                 <DatePicker
-                    selected={this.state.expirytDate}
-                    onChange={this.handleChange}
+                    selected={this.props.purchaseItem.expirytDate}
+                    dateHandleChange={(date) => this.props.dateHandleChange(this.props.purchaseItem.id,date)}
                 />
-
-                <Button onClick={(e)=>this.props.weCanNamethisanything(e, this.props.purchaseItem, this.state.price, this.state.quantity, this.state.fridgeday, this.state.expirytDate)}>Save In My Fridge</Button>
+                <Button onClick={(e)=>this.props.putInTheFridge(e,this.props.purchaseItem.id, this.props.purchaseItem, this.props.purchaseItem.quantity)}>Save In My Fridge</Button>
             </div>
         )
     }
@@ -106,10 +102,14 @@ class MyPurchases extends React.Component{
                 {/* <PurchaseItem /> */}
                 <ul>
                     {this.props.purchasesList.map((line) => 
-                    <li>
+                    <li key={line.id}>
                         <PurchaseItem  
                         purchaseItem={line}
-                        weCanNamethisanything={this.props.putInTheFridgeOnclick}
+                        dateHandleChange={this.props.dateHandleChange}
+                        pricehandleChange={this.props.pricehandleChange}
+                        incrementPurchaseItem={this.props.incrementPurchaseItem}
+                        decrementPurchaseItem={this.props.decrementPurchaseItem}
+                        putInTheFridge={this.props.putInTheFridge}
                         />
                         
                         {/* {item.name} */}

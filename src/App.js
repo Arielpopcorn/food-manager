@@ -10,6 +10,11 @@ import MyPurchases from './FoodManager/MyPurchases';
 import MyFridge from './FoodManager/MyFridge';
 import FoodTrack from './FoodManager/FoodTrack';
 import History from './FoodManager/History';
+import { isMoment } from '../../../Library/Caches/typescript/2.9/node_modules/moment';
+import moment from 'moment';
+import OneWeekTrack from './FoodManager/OneWeekTrack';
+
+
 
 let id = 1;
 
@@ -24,21 +29,46 @@ class App extends Component {
       foodconsumedList: [],
       wastedHistoryList: [],
       consumedHistoryList: [],
+      // totalmoneywasted: 0,
     }
   }
 
+  /*
+    arrayName: String
+    itemId: Number
+
+    returns: item to update
+  */
+  getItem = (arrayName, itemId) => {
+    return this.state[arrayName].find(item => item.id === itemId)
+  }
+  /*  
+    arrayName: String
+    itemId: Number
+
+    returns: undefined
+  */
+  updateItem = (arrayName, newItem) => {
+    const newArray = this.state[arrayName].map(item => {
+      if(newItem.id === item.id){
+        return newItem
+      } else {
+        return item
+      }
+    })
+
+    this.setState({
+      [arrayName]: newArray
+    })
+  }
+
+  deleteItem(arrayName,itemShouldBeDelete){
+    return this.state[arrayName].filter(item => item.id !== itemShouldBeDelete.id)
+  }
+
+
   fMappHandleSubmit =(e, name) => {
-      // this.setState({
-      //     value: '',
-      //     shoppinglist: this.state.shoppinglist.Push(this.handleChange.value)  
-      // });
-      // const newShoppingList = [...this.state.shoppinglist, {
-      //   id: id,
-      //     name: name, // 'banana'
-      //     amount: '',
-      //     datePurchased: new Date(),
-      //     price: ''
-      // }]
+ 
       const newShoppingList = [].concat(this.state.shoppingList)
       newShoppingList.push({
           id: id,
@@ -53,7 +83,7 @@ class App extends Component {
       e.preventDefault();
   }
 
-  fMappDeletehandleOnClick2 = (e, itemtobedelete) => {
+  fMappDeletehandleOnClick = (e, itemtobedelete) => {
       const filteredShoppingList = this.state.shoppingList.filter(item =>{
           return item.id !== itemtobedelete.id
       })
@@ -64,65 +94,112 @@ class App extends Component {
   }
 
   fMappCompletedhandleOnClick = (e, itemtcompleted) => {
-      // const doneShoppingListItem = this.state.shoppingList.filter(item => {
-      //     return item.id === itemtcompleted.id
-      // })[0]
-
-      
       this.setState({
-          purchasesList : [...this.state.purchasesList, itemtcompleted]
+          purchasesList : [...this.state.purchasesList, {
+          ...itemtcompleted, 
+          price: '',
+          quantity: 0,
+          dayputinfridge: Date.now(),
+          expirytDate: moment()
+        }]
       })
 
-      this.fMappDeletehandleOnClick2(e, itemtcompleted)
+      this.fMappDeletehandleOnClick(e, itemtcompleted)
 
   }
 
   //Purchases page-----------------------------------------------//
+
+  //stepper
+  
+  incrementPurchaseItem = (itemId) => {
+    const newItem = this.getItem('purchasesList', itemId)
+    newItem.quantity = newItem.quantity + 1
+    this.updateItem('purchasesList', newItem)
+  }
+
+  decrementPurchaseItem = (itemId) =>{
+    const newItem = this.getItem('purchasesList',itemId)
+    newItem.quantity = newItem.quantity -1
+    this.updateItem('purchasesList', newItem)
+    // newItem.quantity = newItem.quantity - 1
+    // const newItemMinus = this.state.purchasesList.map(item => {
+    //   if(itemId == item.id){
+    //     return newItem
+    //   }else{
+    //     return item
+    //   }
+    // })
+
+    // this.setState({
+    //   purchasesList: newItemMinus
+    // })
+  }
+
+  //Price input
+
+  pricehandleChange = (itemId, itemprice) => {
+    const newItem = this.getItem('purchasesList',itemId)
+    newItem.price = itemprice
+    this.updateItem('purchasesList', newItem)
+  }
+
+
+  //for my calender(used npm install from: https://www.npmjs.com/package/react-datepicker)
+  dateHandleChange = (itemId,itemDate) => {
+    const newItem = this.getItem('purchasesList',itemId)
+    newItem.expirytDate = itemDate
+    this.updateItem('purchasesList',newItem)
+  }
+
   //this function will add a new item to your fridge
-  putInTheFridge = (e,gonnaputinfridgeitem, price, quantity, fridgeday, expirytDate) => {
-      //setState and add item to fridge
-      // const putinthefridgeitem = this.state.purchasesList.filter(item =>{
-      //   return item.id == gonnaputinfridgeitem.id
-      // })[0]
+  putInTheFridge = (e,itemId,itemShouldBeDelete,remain) => {
+      const newItem = this.getItem('purchasesList',itemId)
+      newItem.used = 0
+      newItem.remain = remain
 
-      console.log(gonnaputinfridgeitem)
+      // console.log(gonnaputinfridgeitem)
 
-      const moveditem = this.state.purchasesList.filter(item => {
-        return item.id !== gonnaputinfridgeitem.id
-      })
+      const moveditem = this.deleteItem('purchasesList', itemShouldBeDelete)
+
 
       this.setState({
         purchasesList: moveditem,
-        fridgeList: [...this.state.fridgeList, {
-          name: gonnaputinfridgeitem.name,
-          id: gonnaputinfridgeitem.id,
-          price: parseInt(price),
-          quantity: parseInt(quantity),
-          expirytDate: expirytDate,
-        }]
+        fridgeList: [...this.state.fridgeList, newItem]
       })      
   }
 
 
+  //stepper
+  fridgeIncresementValue = (itemId) => {
+    const newItem = this.getItem('fridgeList',itemId)
+    newItem.remain = newItem.remain + 1
+    this.updateItem('fridgeList', newItem)
+}  
+
+  fridgeDecresementValue = (itemId) => {
+    const newItem = this.getItem('fridgeList',itemId)
+    newItem.remain = newItem.remain - 1
+    this.updateItem('fridgeList', newItem)
+  }
+
+
   deleteFromFridge(e,gonnadelete){
-    const itemCanceledFroFridge = this.state.fridgeList.filter(item =>{
-      return item.id !== gonnadelete.id
-    })
+    const itemCanceledFromFridge = this.state.fridgeList.filter(item => item.id !== gonnadelete.id
+    )
 
     this.setState({
-      fridgeList: itemCanceledFroFridge
+      fridgeList: itemCanceledFromFridge
     })
   }
 
   //put in food consumed
-  putInFoodConsumed = (e, gonnaputinfoodconsumed,used) => {
+  putInFoodConsumed = (e, gonnaputinfoodconsumed) => {
     const foodconsumed = this.state.fridgeList.filter(item =>{
       return item.id == gonnaputinfoodconsumed.id
     })[0]
 
     console.log(foodconsumed)
-
-    foodconsumed.used = used
 
     this.deleteFromFridge(e,gonnaputinfoodconsumed)
     
@@ -134,43 +211,98 @@ class App extends Component {
 
 //put in food wasted
 
-  putInFoodWasted = (e, gonnaputinfoodwasted, remain) => {
+  putInFoodWasted = (e, gonnaputinfoodwasted) => {
     const foodwasted = this.state.fridgeList.filter(item => {
       return item.id == gonnaputinfoodwasted.id
     })[0]
     console.log(foodwasted)
-    // const { wastedHistoryList } = this.state
-    // console.log(wastedHistoryList)
-
-    foodwasted.remain = remain
+    console.log(this.foodconsumed)
+    
+    // const { consumedHistoryList } = this.state
+    // console.log(consumedHistoryList)
 
     this.deleteFromFridge(e,gonnaputinfoodwasted)
-
+    if(foodwasted.remain !== foodwasted.quantity){
+      this.putInFoodConsumed(e, gonnaputinfoodwasted)
+    }
+    
     this.setState({
       foodwastedList: [...this.state.foodwastedList, foodwasted],
       wastedHistoryList: [...this.state.wastedHistoryList, foodwasted]
+      // consumedHistoryList: [...this.state.consumedHistoryList, this.foodconsumed]
     })
   }
 
+  // calculateConsumedAndWasted(){
+  //   putInFoodWasted(e, gonnaputinfoodwasted, remain)
+  //   putInFoodConsumed(e, gonnaputinfoodconsumed, used)
+
+  // }
   //save to history
   clearFoodTrack = () => {
 
-    let wastedToHistory 
-    for(var i=0; i<this.state.foodwastedList.length;i++){
-      wastedToHistory = wastedToHistory + this.state.foodwastedList[i]
-    }
+    // console.log(this.state.foodconsumedList)
 
-    let consumedToHistory
-    for(var i=0; i<this.state.foodconsumedList.length;i++){
-      consumedToHistory = consumedToHistory + this.state.foodconsumedList[i]
-    }
+    // let wastedToHistory 
+    // for(var i=0; i<this.state.foodwastedList.length;i++){
+    //   wastedToHistory = wastedToHistory + this.state.foodwastedList[i]
+    // }
+
+    // let consumedToHistory
+    // for(var i=0; i<this.state.foodconsumedList.length;i++){
+    //   consumedToHistory = consumedToHistory + this.state.foodconsumedList[i]
+    // }
 
     this.setState({
       foodwastedList: [],
       foodconsumedList: [],
-      // history: [...this.state.historyList, wastedToHistory, consumedToHistory]
+      // wastedHistoryList: [...this.state.wastedHistoryList, wastedToHistory],
+      // foodconsumedList: [this.state.foodconsumedList, consumedToHistory]
     })
   }
+
+  howMuchWasted = () => {
+    let total = 0
+
+    for(var i=0;i<this.state.foodwastedList.length;i++){
+
+        total = total + ((this.state.foodwastedList[i].price/this.state.foodwastedList[i].quantity)*this.state.foodwastedList[i].remain)   
+    }
+
+    return total
+    
+    // this.setState({
+    //   totalmoneywasted: totalmoneywasted + total,
+    // })
+   }
+
+   howMuchWastedHistory = () => {
+    let total = 0
+
+    for(var i=0;i<this.state.wastedHistoryList.length;i++){
+
+        total = total + ((this.state.wastedHistoryList[i].price/this.state.wastedHistoryList[i].quantity)*this.state.wastedHistoryList[i].remain)   
+    }
+
+    return total
+    
+    
+   }
+
+  //  filterTime = (time,unit) => {
+  //   //console.log(filtredWastedHistory)
+  //   if(this.state.filter.value === undefined){
+  //       return this.props.wastedHistoryList
+  //   }
+
+  //   const filtredWastedHistory = this.props.wastedHistoryList.filter(item =>{
+
+  //       return item.dayputinfridge.unix() > moment().subtract(time, unit).unix()
+  //   })
+  //   return filtredWastedHistory
+
+  //   // filtredWastedHistory={this.props.filtredWastedHistory}
+  //   }
 
 
   render() {
@@ -182,32 +314,45 @@ class App extends Component {
               <Route path="/" exact render={(props) => 
                 <FMapp 
                   fMappHandleSubmit={this.fMappHandleSubmit}
-                  fMappDeletehandleOnClick={this.fMappDeletehandleOnClick2} 
+                  fMappDeletehandleOnClick={this.fMappDeletehandleOnClick} 
                   fMappCompletedhandleOnClick={this.fMappCompletedhandleOnClick} 
                   shoppingList={this.state.shoppingList} {...props}/>} 
                 />
               <Route path="/mypurchases" component={(props) =>
                  <MyPurchases 
                  purchasesList={this.state.purchasesList} 
-                 putInTheFridgeOnclick={this.putInTheFridge}
+                 putInTheFridge={this.putInTheFridge}
+                 incrementPurchaseItem={this.incrementPurchaseItem}
+                 decrementPurchaseItem = {this.decrementPurchaseItem}
+                 pricehandleChange = {this.pricehandleChange}
+                 dateHandleChange = {this.dateHandleChange}
+                 handleSubmit = {this.handleSubmit}
                  {...props} />} />
               <Route path="/myfridge" component={(props) => 
                 <MyFridge
                 fridgeList={this.state.fridgeList} 
-                putInFoodConsumedOnclick={this.putInFoodConsumed}
-                putInFoodWastedOnclick={this.putInFoodWasted}              
+                putInFoodConsumed={this.putInFoodConsumed}
+                putInFoodWasted={this.putInFoodWasted} 
+                fridgeIncresementValue={this.fridgeIncresementValue}
+                fridgeDecresementValue={this.fridgeDecresementValue}          
                 {...props} />} />
               <Route path="/foodtrack" component={(props) =>
                 <FoodTrack
                 foodconsumedList={this.state.foodconsumedList}
                 foodwastedList={this.state.foodwastedList}  
                 cleanFoodTrackOnClick={this.clearFoodTrack}
-              {...this.props} />} />
+                howMuchWasted={this.howMuchWasted}
+                {...this.props} />} />
               <Route path="/history" component={(props) => 
                 <History
                 wastedHistoryList={this.state.wastedHistoryList}
                 consumedHistoryList={this.state.consumedHistoryList}
-            {...this.props}/>} />
+                howMuchWasted={this.howMuchWastedHistory}
+                {...this.props}/>} />
+              {/* <Route path="/oneweektrack" component={
+                <OneWeekTrack
+                filterTime={this.filterTime}
+                {...this.props}/>} /> */}
           </>
       </Router>
     );
