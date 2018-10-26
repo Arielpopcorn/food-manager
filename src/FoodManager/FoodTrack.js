@@ -9,12 +9,12 @@ class FoodWasted extends React.Component{
     render(){
         console.log(this.props.foodwastedItem)
 
-        if(this.props.foodwastedItem.remain == 0){
+        if(this.props.foodwastedItem.remaining == 0){
             return null
         }else{
         return(
             <div>
-                {this.props.foodwastedItem.remain}{this.props.foodwastedItem.name}
+                {this.props.foodwastedItem.remaining}{this.props.foodwastedItem.name}
             </div>
         )}
     }

@@ -5,7 +5,12 @@ import Title from '../Forms/Title'
 import Input from '../Forms/Input';
 import Button from '../Forms/Button';
 import Navigation from '../Navigations/Navigation'
+import { ReactComponent as DefaultBuySVG } from '../Icons/buy.svg'
 // import Stepper from '../Forms/Stepper';
+
+const BuySVG = styled(DefaultBuySVG)`
+    width: 25px;
+`
 
 class FMapp extends React.Component{
 
@@ -51,7 +56,7 @@ class FMapp extends React.Component{
                     
                     <li key={item.id}>{item.name}
                         <Button onClick={(e) => this.props.fMappDeletehandleOnClick(e, item)}>Delete</Button>
-                        <Button onClick={(e) =>  this.props.fMappCompletedhandleOnClick(e,item)}>Buy</Button>
+                        <BuySVG /><Button onClick={(e) =>  this.props.fMappCompletedhandleOnClick(e,item)}>Buy</Button>
                     </li>
         
                     )}

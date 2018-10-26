@@ -10,13 +10,12 @@ import MyPurchases from './FoodManager/MyPurchases';
 import MyFridge from './FoodManager/MyFridge';
 import FoodTrack from './FoodManager/FoodTrack';
 import History from './FoodManager/History';
-import { isMoment } from '../../../Library/Caches/typescript/2.9/node_modules/moment';
+import uuidv4 from 'uuid/v4'
 import moment from 'moment';
 import OneWeekTrack from './FoodManager/OneWeekTrack';
 
 
-
-let id = 1;
+const localStorage = window.localStorage
 
 class App extends Component {
   constructor(props){
@@ -31,6 +30,20 @@ class App extends Component {
       consumedHistoryList: [],
       // totalmoneywasted: 0,
     }
+  }
+
+  componentDidMount(){
+    this.localStorageIntervalId = setInterval(() => {
+      localStorage.setItem('foodManagerState', JSON.stringify(this.state))
+    }, 1000)
+
+    const foodManagerState = JSON.parse(localStorage.getItem('foodManagerState'))
+
+    this.setState(foodManagerState)
+  }
+
+  componentWillUnmount(){
+    clearInterval(this.localStorageIntervalId)
   }
 
   /*
@@ -71,11 +84,9 @@ class App extends Component {
  
       const newShoppingList = [].concat(this.state.shoppingList)
       newShoppingList.push({
-          id: id,
+          id: uuidv4(),
           name: name, // 'banana'
       })
-      
-      id++
 
       this.setState({
           shoppingList: newShoppingList,
@@ -100,7 +111,7 @@ class App extends Component {
           price: '',
           quantity: 0,
           dayputinfridge: Date.now(),
-          expirytDate: moment()
+          expirytDate: Date.now()
         }]
       })
 
@@ -148,15 +159,14 @@ class App extends Component {
   //for my calender(used npm install from: https://www.npmjs.com/package/react-datepicker)
   dateHandleChange = (itemId,itemDate) => {
     const newItem = this.getItem('purchasesList',itemId)
-    newItem.expirytDate = itemDate
+    newItem.expirytDate = itemDate.valueOf()
     this.updateItem('purchasesList',newItem)
   }
 
   //this function will add a new item to your fridge
-  putInTheFridge = (e,itemId,itemShouldBeDelete,remain) => {
+  putInTheFridge = (e,itemId,itemShouldBeDelete,remaining) => {
       const newItem = this.getItem('purchasesList',itemId)
-      newItem.used = 0
-      newItem.remain = remain
+      newItem.remaining = remaining
 
       // console.log(gonnaputinfridgeitem)
 
@@ -173,37 +183,28 @@ class App extends Component {
   //stepper
   fridgeIncresementValue = (itemId) => {
     const newItem = this.getItem('fridgeList',itemId)
-    newItem.remain = newItem.remain + 1
+    newItem.remaining = newItem.remaining + 1
     this.updateItem('fridgeList', newItem)
 }  
 
   fridgeDecresementValue = (itemId) => {
     const newItem = this.getItem('fridgeList',itemId)
-    newItem.remain = newItem.remain - 1
+    newItem.remaining = newItem.remaining - 1
     this.updateItem('fridgeList', newItem)
   }
 
 
-  deleteFromFridge(e,gonnadelete){
-    const itemCanceledFromFridge = this.state.fridgeList.filter(item => item.id !== gonnadelete.id
-    )
 
-    this.setState({
-      fridgeList: itemCanceledFromFridge
-    })
-  }
-
-  //put in food consumed
-  putInFoodConsumed = (e, gonnaputinfoodconsumed) => {
-    const foodconsumed = this.state.fridgeList.filter(item =>{
-      return item.id == gonnaputinfoodconsumed.id
-    })[0]
-
+  putInFoodConsumed = (e, used, gonnaputinfoodconsumed) => {
+    const foodconsumed = this.getItem('fridgeList',gonnaputinfoodconsumed.id)
     console.log(foodconsumed)
 
-    this.deleteFromFridge(e,gonnaputinfoodconsumed)
+    foodconsumed.used = used
+
+    const itemCanceledFromFridge = this.deleteItem('fridgeList',gonnaputinfoodconsumed)
     
     this.setState({
+      fridgeList: itemCanceledFromFridge,
       foodconsumedList: [...this.state.foodconsumedList, foodconsumed],
       consumedHistoryList: [...this.state.consumedHistoryList, foodconsumed]
     })
@@ -212,52 +213,42 @@ class App extends Component {
 //put in food wasted
 
   putInFoodWasted = (e, gonnaputinfoodwasted) => {
-    const foodwasted = this.state.fridgeList.filter(item => {
-      return item.id == gonnaputinfoodwasted.id
-    })[0]
+    const foodwasted = this.getItem('fridgeList',gonnaputinfoodwasted.id)
     console.log(foodwasted)
-    console.log(this.foodconsumed)
-    
-    // const { consumedHistoryList } = this.state
-    // console.log(consumedHistoryList)
+    // const consumedHistoryList = [...this.state.consumedHistoryList]
 
-    this.deleteFromFridge(e,gonnaputinfoodwasted)
-    if(foodwasted.remain !== foodwasted.quantity){
-      this.putInFoodConsumed(e, gonnaputinfoodwasted)
-    }
+    // foodwasted.used = used
+
+    const itemCanceledFromFridge = this.deleteItem('fridgeList',gonnaputinfoodwasted)
+
+    // if(foodwasted.remaining !== foodwasted.quantity){
+    //   const foodconsumed = this.putInFoodConsumed(e,used, gonnaputinfoodwasted)
+    //   console.log('FOOD CONSUMED', foodconsumed)
+    // }
     
     this.setState({
+      fridgeList: itemCanceledFromFridge,
       foodwastedList: [...this.state.foodwastedList, foodwasted],
       wastedHistoryList: [...this.state.wastedHistoryList, foodwasted]
-      // consumedHistoryList: [...this.state.consumedHistoryList, this.foodconsumed]
     })
   }
 
-  // calculateConsumedAndWasted(){
-  //   putInFoodWasted(e, gonnaputinfoodwasted, remain)
-  //   putInFoodConsumed(e, gonnaputinfoodconsumed, used)
+  decideConsumedOrWasted = (e, used, fridgeItem) => {
+    if(fridgeItem.remaining === fridgeItem.quantity){
+      this.putInFoodWasted(e,fridgeItem)
+    } else if(fridgeItem.remaining === 0){
+      this.putInFoodConsumed(e, used, fridgeItem)
+    } else {
+      this.putInFoodWasted(e,fridgeItem)
+      this.putInFoodConsumed(e, used, fridgeItem)
+    }
+  }
 
-  // }
   //save to history
   clearFoodTrack = () => {
-
-    // console.log(this.state.foodconsumedList)
-
-    // let wastedToHistory 
-    // for(var i=0; i<this.state.foodwastedList.length;i++){
-    //   wastedToHistory = wastedToHistory + this.state.foodwastedList[i]
-    // }
-
-    // let consumedToHistory
-    // for(var i=0; i<this.state.foodconsumedList.length;i++){
-    //   consumedToHistory = consumedToHistory + this.state.foodconsumedList[i]
-    // }
-
     this.setState({
       foodwastedList: [],
       foodconsumedList: [],
-      // wastedHistoryList: [...this.state.wastedHistoryList, wastedToHistory],
-      // foodconsumedList: [this.state.foodconsumedList, consumedToHistory]
     })
   }
 
@@ -266,14 +257,9 @@ class App extends Component {
 
     for(var i=0;i<this.state.foodwastedList.length;i++){
 
-        total = total + ((this.state.foodwastedList[i].price/this.state.foodwastedList[i].quantity)*this.state.foodwastedList[i].remain)   
+        total = total + ((this.state.foodwastedList[i].price/this.state.foodwastedList[i].quantity)*this.state.foodwastedList[i].remaining)   
     }
-
-    return total
-    
-    // this.setState({
-    //   totalmoneywasted: totalmoneywasted + total,
-    // })
+      return total
    }
 
    howMuchWastedHistory = () => {
@@ -281,28 +267,12 @@ class App extends Component {
 
     for(var i=0;i<this.state.wastedHistoryList.length;i++){
 
-        total = total + ((this.state.wastedHistoryList[i].price/this.state.wastedHistoryList[i].quantity)*this.state.wastedHistoryList[i].remain)   
+        total = total + ((this.state.wastedHistoryList[i].price/this.state.wastedHistoryList[i].quantity)*this.state.wastedHistoryList[i].remaining)   
     }
-
-    return total
-    
-    
+      return total
    }
 
-  //  filterTime = (time,unit) => {
-  //   //console.log(filtredWastedHistory)
-  //   if(this.state.filter.value === undefined){
-  //       return this.props.wastedHistoryList
-  //   }
 
-  //   const filtredWastedHistory = this.props.wastedHistoryList.filter(item =>{
-
-  //       return item.dayputinfridge.unix() > moment().subtract(time, unit).unix()
-  //   })
-  //   return filtredWastedHistory
-
-  //   // filtredWastedHistory={this.props.filtredWastedHistory}
-  //   }
 
 
   render() {
@@ -331,8 +301,7 @@ class App extends Component {
               <Route path="/myfridge" component={(props) => 
                 <MyFridge
                 fridgeList={this.state.fridgeList} 
-                putInFoodConsumed={this.putInFoodConsumed}
-                putInFoodWasted={this.putInFoodWasted} 
+                decideConsumedOrWasted={this.decideConsumedOrWasted}
                 fridgeIncresementValue={this.fridgeIncresementValue}
                 fridgeDecresementValue={this.fridgeDecresementValue}          
                 {...props} />} />

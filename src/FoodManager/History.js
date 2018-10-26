@@ -123,7 +123,7 @@ class History extends React.Component{
                     <h2>Wasted</h2>
                     {this.wastedFilterTime(this.state.filter.value, this.state.filter.unit).map((item) => {
                         return(
-                        <li>{item.remain}{item.name}</li>
+                        <li>{item.remaining}{item.name}</li>
                         )})
                     }
                 </ul>

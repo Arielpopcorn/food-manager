@@ -1,12 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
-import {Link} from 'react-router-dom'
+import moment from 'moment'
 import Titile from '../Forms/Title';
 import Input from '../Forms/Input'
 import Button from '../Forms/Button'
 import Navigation from '../Navigations/Navigation'
 import DatePicker from 'react-datepicker';
- 
 import 'react-datepicker/dist/react-datepicker.css';
 
 //the purchases line which is including name, quantity, expire date, button to put in the fridge)
@@ -74,8 +73,8 @@ class PurchaseItem extends React.Component{
                 {/* </form> */}
                     <h2>expiry Date</h2>
                 <DatePicker
-                    selected={this.props.purchaseItem.expirytDate}
-                    dateHandleChange={(date) => this.props.dateHandleChange(this.props.purchaseItem.id,date)}
+                    selected={moment(this.props.purchaseItem.expirytDate)}
+                    onChange={(date) => {console.log(date);this.props.dateHandleChange(this.props.purchaseItem.id,date)}}
                 />
                 <Button onClick={(e)=>this.props.putInTheFridge(e,this.props.purchaseItem.id, this.props.purchaseItem, this.props.purchaseItem.quantity)}>Save In My Fridge</Button>
             </div>
