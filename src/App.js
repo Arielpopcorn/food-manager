@@ -81,23 +81,23 @@ class App extends Component {
 
 
   fMappHandleSubmit =(e, name) => {
- 
-      const newShoppingList = [].concat(this.state.shoppingList)
-      newShoppingList.push({
-          id: uuidv4(),
-          name: name, // 'banana'
-      })
 
+    if(name == ''){
+      return
+    }
       this.setState({
-          shoppingList: newShoppingList,
+          shoppingList: [...this.state.shoppingList,{
+            ...this.shoppingList,
+            id: uuidv4(),
+            name: name, // 'banana'
+          }]
       });
       e.preventDefault();
   }
 
-  fMappDeletehandleOnClick = (e, itemtobedelete) => {
-      const filteredShoppingList = this.state.shoppingList.filter(item =>{
-          return item.id !== itemtobedelete.id
-      })
+
+  fMappDeletehandleOnClick = (e, itemShouldBeDelete) => {
+      const filteredShoppingList = this.deleteItem('shoppingList', itemShouldBeDelete)
       
       this.setState({
           shoppingList:filteredShoppingList
@@ -147,6 +147,14 @@ class App extends Component {
     // })
   }
 
+  deletefrompurchases = (e,itemShouldBeDelete) => {
+    const newpurchasesList = this.deleteItem('purchasesList',itemShouldBeDelete)
+
+    this.setState({
+      purchasesList: newpurchasesList
+    })
+  }
+
   //Price input
 
   pricehandleChange = (itemId, itemprice) => {
@@ -194,6 +202,13 @@ class App extends Component {
   }
 
 
+  deletefromFridge = (e,itemShouldBeDelete) => {
+    const newfridgeList = this.deleteItem('fridgeList',itemShouldBeDelete)
+
+    this.setState({
+      fridgeList: newfridgeList
+    })
+  }
 
   putInFoodConsumed = (e, used, gonnaputinfoodconsumed) => {
     const foodconsumed = this.getItem('fridgeList',gonnaputinfoodconsumed.id)
@@ -252,6 +267,13 @@ class App extends Component {
     })
   }
 
+  clearHistory = () => {
+    this.setState({
+      wastedHistoryList: [],
+      consumedHistoryList: [],
+    })
+  }
+
   howMuchWasted = () => {
     let total = 0
 
@@ -294,6 +316,7 @@ class App extends Component {
                  putInTheFridge={this.putInTheFridge}
                  incrementPurchaseItem={this.incrementPurchaseItem}
                  decrementPurchaseItem = {this.decrementPurchaseItem}
+                 deletefrompurchases = {this.deletefrompurchases}
                  pricehandleChange = {this.pricehandleChange}
                  dateHandleChange = {this.dateHandleChange}
                  handleSubmit = {this.handleSubmit}
@@ -303,7 +326,8 @@ class App extends Component {
                 fridgeList={this.state.fridgeList} 
                 decideConsumedOrWasted={this.decideConsumedOrWasted}
                 fridgeIncresementValue={this.fridgeIncresementValue}
-                fridgeDecresementValue={this.fridgeDecresementValue}          
+                fridgeDecresementValue={this.fridgeDecresementValue}   
+                deletefromFridge={this.deletefromFridge}       
                 {...props} />} />
               <Route path="/foodtrack" component={(props) =>
                 <FoodTrack
@@ -317,7 +341,9 @@ class App extends Component {
                 wastedHistoryList={this.state.wastedHistoryList}
                 consumedHistoryList={this.state.consumedHistoryList}
                 howMuchWasted={this.howMuchWastedHistory}
+                clearHistory={this.clearHistory}
                 {...this.props}/>} />
+                
               {/* <Route path="/oneweektrack" component={
                 <OneWeekTrack
                 filterTime={this.filterTime}

@@ -8,6 +8,7 @@ import {
   } from 'react-router-dom'
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import './FoodManager/GlobalStyles'
 
 ReactDOM.render(<App />, document.getElementById('root'));
 
