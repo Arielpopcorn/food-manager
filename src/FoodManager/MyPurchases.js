@@ -200,8 +200,8 @@ class MyPurchases extends React.Component{
                     <Titile>My Purchases</Titile>
                         <Ul>
                             {this.props.purchasesList.map((line) => 
-                            <Li key={line.id}>
                                 <PurchaseItem  
+                                key={line.id}
                                 purchaseItem={line}
                                 dateHandleChange={this.props.dateHandleChange}
                                 pricehandleChange={this.props.pricehandleChange}
@@ -209,8 +209,7 @@ class MyPurchases extends React.Component{
                                 decrementPurchaseItem={this.props.decrementPurchaseItem}
                                 deletefrompurchases={this.props.deletefrompurchases}
                                 putInTheFridge={this.props.putInTheFridge}
-                                />
-                            </Li>)}
+                            />)}
                         </Ul>
                 </ContentContainer>
                 

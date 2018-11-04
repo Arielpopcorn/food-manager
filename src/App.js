@@ -294,9 +294,6 @@ class App extends Component {
       return total
    }
 
-
-
-
   render() {
     console.log('MY APP STATE', this.state)
     return (
@@ -310,7 +307,7 @@ class App extends Component {
                   fMappCompletedhandleOnClick={this.fMappCompletedhandleOnClick} 
                   shoppingList={this.state.shoppingList} {...props}/>} 
                 />
-              <Route path="/mypurchases" component={(props) =>
+              <Route path="/mypurchases" render={(props) =>
                  <MyPurchases 
                  purchasesList={this.state.purchasesList} 
                  putInTheFridge={this.putInTheFridge}
@@ -321,7 +318,7 @@ class App extends Component {
                  dateHandleChange = {this.dateHandleChange}
                  handleSubmit = {this.handleSubmit}
                  {...props} />} />
-              <Route path="/myfridge" component={(props) => 
+              <Route path="/myfridge" render={(props) => 
                 <MyFridge
                 fridgeList={this.state.fridgeList} 
                 decideConsumedOrWasted={this.decideConsumedOrWasted}
@@ -329,14 +326,14 @@ class App extends Component {
                 fridgeDecresementValue={this.fridgeDecresementValue}   
                 deletefromFridge={this.deletefromFridge}       
                 {...props} />} />
-              <Route path="/foodtrack" component={(props) =>
+              <Route path="/foodtrack" render={(props) =>
                 <FoodTrack
                 foodconsumedList={this.state.foodconsumedList}
                 foodwastedList={this.state.foodwastedList}  
                 cleanFoodTrackOnClick={this.clearFoodTrack}
                 howMuchWasted={this.howMuchWasted}
                 {...this.props} />} />
-              <Route path="/history" component={(props) => 
+              <Route path="/history" render={(props) => 
                 <History
                 wastedHistoryList={this.state.wastedHistoryList}
                 consumedHistoryList={this.state.consumedHistoryList}
