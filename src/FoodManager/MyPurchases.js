@@ -168,7 +168,7 @@ class PurchaseItem extends React.Component{
                 </ButtonWrapper>
                 {/* <form onSubmit={this.props.handleSubmit}> */}
                     <ItemItself>Price</ItemItself>
-                    <Input type="text" value={this.props.purchaseItem.price} onChange={(e) => this.props.pricehandleChange(this.props.purchaseItem.id, e.target.value)} />
+                    <Input type="number" value={this.props.purchaseItem.price} onChange={(e) => this.props.pricehandleChange(this.props.purchaseItem.id, e.target.value)} />
                     {/* <Button>$$$</Button> */}
                 {/* </form> */}
                     <ItemItself>expiry Date</ItemItself>
