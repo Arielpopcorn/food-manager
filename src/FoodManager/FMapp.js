@@ -57,8 +57,12 @@ const ListContainer = styled.div`
 `
 
 const ItemName = styled.h2`
-    padding-right: 27px;
+    text-align: left;
+    padding-right: 20px;
     font-size: 20px;
+    width: 70px;
+    padding-left: 20px;
+
 `
 
 const Li = styled.div`

@@ -89,6 +89,14 @@ const ButtonToClick = styled(DefaultButton)`
     }
 `
 
+const WarningP = styled.p`
+    color: red;
+`
+
+const OkP = styled.p`
+    color: #000;
+`
+
 class FridgeItem extends React.Component{
 
     constructor(props){
@@ -102,6 +110,7 @@ class FridgeItem extends React.Component{
 
         console.log(this.props.fridgeItem)
         let binbutton
+        let daystobeexpired
 
         if(this.props.fridgeItem.remaining == 0){
                 binbutton = <ButtonToClick onClick={(e) => {
@@ -113,6 +122,12 @@ class FridgeItem extends React.Component{
                 }>Throw in the bin</ButtonToClick>
             }
 
+        if(this.props.fridgeItem.expirytDate - new Date().getTime() < 259200000){
+            daystobeexpired = <WarningP>{moment(this.props.fridgeItem.expirytDate).endOf('day').fromNow()} days until expiry date.</WarningP>
+        }else{
+            daystobeexpired = <OkP>{moment(this.props.fridgeItem.expirytDate).endOf('day').fromNow()} days until expiry date.</OkP>
+        }
+
         return(
         <div>
             <ListContainer>
@@ -122,7 +137,7 @@ class FridgeItem extends React.Component{
                     {this.props.fridgeItem.remaining}/{this.props.fridgeItem.quantity}
                     <Button onClick={() => this.props.fridgeIncresementValue(this.props.fridgeItem.id)}><PlusSVG/></Button>
                 </ButtonWrapper>
-                <p>{moment(this.props.fridgeItem.expirytDate).endOf('day').fromNow()} days until expiry date.</p>
+                {daystobeexpired}
                 {/* {console.log(this.props.fridgeItem.expirytDate.unix(), Date.now())} */}
                 {binbutton}
                 <ButtonToClick onClick={(e)=>this.props.deletefromFridge(e,this.props.fridgeItem)}>Delete</ButtonToClick>
@@ -134,17 +149,41 @@ class FridgeItem extends React.Component{
 
 
 class MyFridge extends React.Component{
-    render(){
 
+    constructor(props){
+        super(props);
+        this.state = {
+            search: ''
+        }
+    }
+
+    updateSearch = (e) => {
+        this.setState({
+            search: e.target.value.substr(0,20)
+        })
+        //console.log(e.target.value)
+    }
+
+    render(){
         console.log(this.props.purchasesList)
+
+        let filterItem = this.props.fridgeList.filter(
+            (fridgeItem) => {
+                return fridgeItem.name.toLowerCase().indexOf(
+                    this.state.search.toLowerCase()) !== -1
+            }
+        )
 
         return(
             <div>
                 <Navigation />
                 <ContentContainer>
                     <Titile>My Fridge</Titile>
+                    <h2>Search</h2><Input  type="text" 
+                                value={this.state.search} 
+                                onChange={this.updateSearch}/>
                     <Ul>
-                        {this.props.fridgeList.map((line) => 
+                        {filterItem.map((line) => 
                     <Li>
                         <FridgeItem
                         fridgeItem = {line}

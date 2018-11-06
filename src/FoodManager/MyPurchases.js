@@ -187,19 +187,41 @@ class PurchaseItem extends React.Component{
 
 class MyPurchases extends React.Component{
 
+    constructor(props){
+        super(props);
+        this.state = {
+            search: ''
+        };
+    }
+
+    updateSearch = (e) => {
+        this.setState({
+            search: e.target.value.substr(0,20)
+        })
+        //console.log(e.target.value)
+    }
+
     render(){
         // const { purchaseList } = this.props
         // console.log('purchaseList', purchaseList)
         //console.log(this.props.purchasesList)
         console.log('MyPurchases this.props',this.props)
-        
+        let filterItem = this.props.purchasesList.filter(
+            (purchaseItem) => {
+                return purchaseItem.name.toLowerCase().indexOf(
+                    this.state.search.toLowerCase()) !== -1
+            }
+        )
         return(
             <div>
                 <Navigation/>
                 <ContentContainer>
                     <Titile>My Purchases</Titile>
+                        <h2>Search</h2><Input  type="text" 
+                                value={this.state.search} 
+                                onChange={this.updateSearch}/>
                         <Ul>
-                            {this.props.purchasesList.map((line) => 
+                            {filterItem.map((line) => 
                                 <PurchaseItem  
                                 key={line.id}
                                 purchaseItem={line}
