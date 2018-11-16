@@ -112,7 +112,7 @@ class FMapp extends React.Component{
                 {/* <Stepper /> */}
                 <Navigation />
                 <ContentContainer>
-                    <Title>Food Manager</Title>
+                    <Title>Food shoppingList</Title>
                     <ListContainer>
                         <form onSubmit={this.handleSubmit}>
                             <Input type="text" value={this.state.inputValue} onChange={this.handleChange}/>
