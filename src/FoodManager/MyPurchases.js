@@ -9,6 +9,7 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {ReactComponent as DefaultMinusSVG} from '../Icons/minus.svg'
 import {ReactComponent as DefautPlusSVG} from '../Icons/plus.svg'
+import Guide from './Guide'
 
 
 const ContentContainer = styled.div`
@@ -171,7 +172,7 @@ class PurchaseItem extends React.Component{
                     <Input type="number" value={this.props.purchaseItem.price} onChange={(e) => this.props.pricehandleChange(this.props.purchaseItem.id, e.target.value)} />
                     {/* <Button>$$$</Button> */}
                 {/* </form> */}
-                    <ItemItself>expiry Date</ItemItself>
+                    <ItemItself>Expiry Date</ItemItself>
                 <DatePicker
                     selected={moment(this.props.purchaseItem.expirytDate)}
                     onChange={(date) => {console.log(date);this.props.dateHandleChange(this.props.purchaseItem.id,date)}}
@@ -214,8 +215,8 @@ class MyPurchases extends React.Component{
         )
         return(
             <div>
-                <Navigation/>
                 <ContentContainer>
+                    <Navigation toggleGuide={this.props.toggleGuide}/>
                     <Titile>My Purchases</Titile>
                         <h2>Search</h2><Input  type="text" 
                                 value={this.state.search} 
@@ -233,6 +234,7 @@ class MyPurchases extends React.Component{
                                 putInTheFridge={this.props.putInTheFridge}
                             />)}
                         </Ul>
+                    <Guide show={this.props.show} toggleGuide={this.props.toggleGuide}/>
                 </ContentContainer>
                 
             </div>

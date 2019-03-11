@@ -8,6 +8,7 @@ import { now } from '../../../../Library/Caches/typescript/2.9/node_modules/mome
 import Input from '../Forms/Input';
 import {ReactComponent as DefaultminusSVG} from '../Icons/minus.svg'
 import {ReactComponent as DefaultplusSVG} from '../Icons/plus.svg'
+import Guide from './Guide'
 
 const PlusSVG = styled(DefaultplusSVG)`
     width: 25px;
@@ -176,8 +177,8 @@ class MyFridge extends React.Component{
 
         return(
             <div>
-                <Navigation />
                 <ContentContainer>
+                    <Navigation toggleGuide={this.props.toggleGuide}/>
                     <Titile>My Fridge</Titile>
                     <h2>Search</h2><Input  type="text" 
                                 value={this.state.search} 
@@ -195,6 +196,7 @@ class MyFridge extends React.Component{
                     </Li>    
                     )}
                     </Ul>
+                    <Guide show={this.props.show} toggleGuide={this.props.toggleGuide}/>
                 </ContentContainer>
             </div>
         )

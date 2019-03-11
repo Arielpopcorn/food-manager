@@ -29,7 +29,15 @@ class App extends Component {
       wastedHistoryList: [],
       consumedHistoryList: [],
       // totalmoneywasted: 0,
+      show: false,
     }
+  }
+
+  toggleGuide = () => {
+    console.log('toggleGuide')
+    this.setState({
+      show: !this.state.show
+    })
   }
 
   componentDidMount(){
@@ -296,6 +304,7 @@ class App extends Component {
 
   render() {
     console.log('MY APP STATE', this.state)
+    console.log(this.toggleGuide)
     return (
       <Router>
           <>
@@ -305,7 +314,10 @@ class App extends Component {
                   fMappHandleSubmit={this.fMappHandleSubmit}
                   fMappDeletehandleOnClick={this.fMappDeletehandleOnClick} 
                   fMappCompletedhandleOnClick={this.fMappCompletedhandleOnClick} 
-                  shoppingList={this.state.shoppingList} {...props}/>} 
+                  shoppingList={this.state.shoppingList}
+                  show={this.state.show}
+                  toggleGuide={this.toggleGuide}
+                  {...props} />}
                 />
               <Route path="/mypurchases" render={(props) =>
                  <MyPurchases 
@@ -317,6 +329,8 @@ class App extends Component {
                  pricehandleChange = {this.pricehandleChange}
                  dateHandleChange = {this.dateHandleChange}
                  handleSubmit = {this.handleSubmit}
+                 show={this.state.show}
+                 toggleGuide={this.toggleGuide}
                  {...props} />} />
               <Route path="/myfridge" render={(props) => 
                 <MyFridge
@@ -324,7 +338,9 @@ class App extends Component {
                 decideConsumedOrWasted={this.decideConsumedOrWasted}
                 fridgeIncresementValue={this.fridgeIncresementValue}
                 fridgeDecresementValue={this.fridgeDecresementValue}   
-                deletefromFridge={this.deletefromFridge}       
+                deletefromFridge={this.deletefromFridge}     
+                show={this.state.show}
+                toggleGuide={this.toggleGuide}  
                 {...props} />} />
               <Route path="/foodtrack" render={(props) =>
                 <FoodTrack
@@ -332,6 +348,8 @@ class App extends Component {
                 foodwastedList={this.state.foodwastedList}  
                 cleanFoodTrackOnClick={this.clearFoodTrack}
                 howMuchWasted={this.howMuchWasted}
+                show={this.state.show}
+                toggleGuide={this.toggleGuide}
                 {...this.props} />} />
               <Route path="/history" render={(props) => 
                 <History
@@ -339,6 +357,8 @@ class App extends Component {
                 consumedHistoryList={this.state.consumedHistoryList}
                 howMuchWasted={this.howMuchWastedHistory}
                 clearHistory={this.clearHistory}
+                show={this.state.show}
+                toggleGuide={this.toggleGuide}
                 {...this.props}/>} />
                 
               {/* <Route path="/oneweektrack" component={

@@ -6,6 +6,7 @@ import Button from '../Forms/Button';
 import {Link} from 'react-router-dom'
 import moment from 'moment'
 import DefaultButton from '../Forms/Button'
+import Guide from './Guide'
 
 const ButtonToClick = styled(DefaultButton)`
     background-color: skyblue;
@@ -136,8 +137,8 @@ class History extends React.Component{
         return(
             
             <div>
-                <Navigation />
                 <ContentContainer>
+                    <Navigation toggleGuide={this.props.toggleGuide}/>
                     <Title>History</Title>
                     {/* <ul>
                         <h2>Wasted</h2>
@@ -201,6 +202,7 @@ class History extends React.Component{
                         })}>In 3 Months</ButtonToClick>
                         <ButtonToClick onClick={this.props.clearHistory}>Clear History</ButtonToClick>
                     </ButtonContainer>
+                    <Guide show={this.props.show} toggleGuide={this.props.toggleGuide}/>
                 </ContentContainer>
             </div>
         )

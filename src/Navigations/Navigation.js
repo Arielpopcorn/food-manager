@@ -1,9 +1,12 @@
 import React from 'react'
 import styled from 'styled-components'
 import {Link} from 'react-router-dom'
+import { ReactComponent as DefaultQuestionSVG } from '../Icons/question.svg'
+import Button from '../Forms/Button';
+import Guide from '../FoodManager/Guide';
 
 const NavContainer = styled.nav`
-    width: 634px;
+    width: 740px;
     display: flex;
     margin: 60px auto 30px;
     @media (max-width: 700px) {
@@ -23,11 +26,17 @@ const NavContainer = styled.nav`
     } */
 `
 
+const QuestionSVG = styled(DefaultQuestionSVG)`
+    height: 23px;
+    text-align: center;
+`
+
 const Li = styled.li`
     list-style: none;
 `
 
 const StyledLink = styled(Link)`
+    display: flex;
     background-color: #fafafa;
     color: #000;
     text-decoration: none;
@@ -45,15 +54,18 @@ const StyledLink = styled(Link)`
     }
 `
 
-class Navigation extends React.Component{
+class Navigation extends React.Component{  
+    
     render(){
+        console.log(this.props.toggleGuide)
         return(
             <NavContainer>
                 <Li><StyledLink to={"/"}>Food shoppingList</StyledLink></Li>
                 <Li><StyledLink to={"/mypurchases"}>My Purchases</StyledLink></Li> 
                 <Li><StyledLink to={"/myfridge"}>My Fridge</StyledLink></Li>
                 <Li><StyledLink to={"foodtrack/"}>Food Track</StyledLink></Li>
-                <Li><StyledLink to={"/history"}>History</StyledLink></Li>               
+                <Li><StyledLink to={"/history"}>History</StyledLink></Li>
+                <Button onClick={this.props.toggleGuide}><QuestionSVG /></Button>
             </NavContainer>
         )
     }

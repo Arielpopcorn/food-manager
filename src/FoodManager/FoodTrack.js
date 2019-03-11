@@ -4,6 +4,7 @@ import Navigation from '../Navigations/Navigation';
 import Titile from '../Forms/Title';
 import Button from '../Forms/Button';
 import DefaultButton from '../Forms/Button'
+import Guide from './Guide'
 
 const ContentContainer = styled.div`
     display: flex;
@@ -82,8 +83,8 @@ class FoodTrack extends React.Component{
         
         return(
             <div>
-                <Navigation />
                 <ContentContainer>
+                    <Navigation toggleGuide={this.props.toggleGuide}/>
                     <Titile>Food Track</Titile>
                     <ConsumeWasteContainer>
                         <Ul>
@@ -110,7 +111,8 @@ class FoodTrack extends React.Component{
                             })}
                         </Ul>
                     </ConsumeWasteContainer>
-                <ButtonToClick onClick={this.props.cleanFoodTrackOnClick}>Clear</ButtonToClick>    
+                <ButtonToClick onClick={this.props.cleanFoodTrackOnClick}>Clear</ButtonToClick> 
+                <Guide show={this.props.show} toggleGuide={this.props.toggleGuide}/>   
                 </ContentContainer>
             </div>
         )
